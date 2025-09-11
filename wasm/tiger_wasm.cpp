@@ -493,6 +493,102 @@ public:
         that.bezier_curve_to( 79.899998f, 362.233340f, 79.119731f, 374.508010f, 119.633330f, 375.700010f );
         that.bezier_curve_to( 160.080000f, 376.854670f, 710.299980f, 329.700010f, 710.299980f, 329.700010f );
         that.fill();
+
+        // Additional orange color sections from original tiger
+        that.begin_path();
+        that.set_line_width( 0.133333f );
+        that.set_color( canvas_ity::fill_style, 0.8f, 0.45098039215686275f, 0.14901960784313725f, 1.0f );
+        that.move_to( 101.100000f, 362.500010f );
+        that.bezier_curve_to( 64.453065f, 304.693340f, 85.633331f, 387.433340f, 85.633331f, 387.433340f );
+        that.bezier_curve_to( 98.480264f, 437.868000f, 288.566660f, 382.766670f, 288.566660f, 382.766670f );
+        that.bezier_curve_to( 288.566660f, 382.766670f, 536.134650f, 338.133340f, 552.566650f, 332.233340f );
+        that.bezier_curve_to( 568.987990f, 326.400010f, 708.566650f, 335.833340f, 708.566650f, 335.833340f );
+        that.line_to( 700.433320f, 311.166670f );
+        that.bezier_curve_to( 605.361320f, 243.093340f, 577.201320f, 277.120010f, 557.233320f, 271.300010f );
+        that.bezier_curve_to( 537.307990f, 265.386680f, 540.827990f, 279.466680f, 536.166650f, 280.633340f );
+        that.bezier_curve_to( 531.441320f, 281.813340f, 473.947990f, 245.440010f, 464.566660f, 246.633340f );
+        that.bezier_curve_to( 455.174660f, 247.786680f, 418.006660f, 212.952010f, 439.899990f, 259.566680f );
+        that.bezier_curve_to( 463.387990f, 309.386670f, 354.266660f, 317.013340f, 329.633330f, 300.633340f );
+        that.bezier_curve_to( 304.986660f, 284.160010f, 340.166660f, 327.566670f, 340.166660f, 327.566670f );
+        that.bezier_curve_to( 367.173320f, 356.906670f, 316.699990f, 332.233340f, 316.699990f, 332.233340f );
+        that.bezier_curve_to( 266.266660f, 313.493340f, 231.066660f, 351.040010f, 226.433330f, 352.233340f );
+        that.bezier_curve_to( 221.679990f, 353.386670f, 214.639990f, 358.080010f, 213.499990f, 348.633340f );
+        that.bezier_curve_to( 212.293330f, 339.306670f, 201.278660f, 314.812010f, 154.833330f, 353.433340f );
+        that.bezier_curve_to( 125.466660f, 377.734670f, 105.233330f, 345.433340f, 105.233330f, 345.433340f );
+        that.line_to( 101.100000f, 362.500010f );
+        that.fill();
+
+        // More orange gradient sections
+        that.begin_path();
+        that.set_line_width( 0.133333f );
+        that.set_color( canvas_ity::fill_style, 0.9098039215686274f, 0.5019607843137255f, 0.22745098039215686f, 1.0f );
+        that.move_to( 466.433320f, 249.166680f );
+        that.bezier_curve_to( 457.094660f, 250.348010f, 419.889320f, 215.530680f, 441.899990f, 262.100010f );
+        that.bezier_curve_to( 466.187990f, 313.706670f, 356.187990f, 319.573340f, 331.499990f, 303.166670f );
+        that.bezier_curve_to( 306.906660f, 286.721340f, 342.166660f, 330.100010f, 342.166660f, 330.100010f );
+        that.bezier_curve_to( 369.094660f, 359.468010f, 318.699990f, 334.766670f, 318.699990f, 334.766670f );
+        that.bezier_curve_to( 268.186660f, 316.054670f, 232.986660f, 353.601340f, 228.299990f, 354.766670f );
+        that.bezier_curve_to( 223.599990f, 355.948010f, 216.559990f, 360.640010f, 215.366660f, 351.300010f );
+        that.bezier_curve_to( 214.213330f, 341.868010f, 203.390660f, 317.617340f, 156.700000f, 355.966670f );
+        that.bezier_curve_to( 125.574000f, 381.388010f, 105.766660f, 349.966670f, 105.766660f, 349.966670f );
+        that.line_to( 101.100000f, 364.766670f );
+        that.bezier_curve_to( 64.427065f, 306.373340f, 86.566665f, 391.833340f, 86.566665f, 391.833340f );
+        that.bezier_curve_to( 99.440664f, 442.349340f, 290.433330f, 385.300010f, 290.433330f, 385.300010f );
+        that.bezier_curve_to( 290.433330f, 385.300010f, 538.054650f, 340.694670f, 554.433320f, 334.766670f );
+        that.bezier_curve_to( 570.907990f, 328.961340f, 709.233320f, 338.233340f, 709.233320f, 338.233340f );
+        that.line_to( 701.099980f, 312.900010f );
+        that.bezier_curve_to( 606.107980f, 244.800010f, 579.121320f, 279.681340f, 559.233320f, 273.833340f );
+        that.bezier_curve_to( 539.227990f, 267.948010f, 542.747990f, 282.028010f, 538.033320f, 283.166680f );
+        that.bezier_curve_to( 533.361320f, 284.373340f, 475.867990f, 248.000010f, 466.433320f, 249.166680f );
+        that.fill();
+
+        // Key black strokes from original tiger
+        that.begin_path();
+        that.set_color( canvas_ity::stroke_style, 0.0f, 0.0f, 0.0f, 1.0f );
+        that.set_line_width( 1.466667f );
+        that.move_to( 139.766660f, 459.833340f );
+        that.line_to( 172.033330f, 466.766670f );
+        that.stroke();
+
+        that.begin_path();
+        that.set_color( canvas_ity::stroke_style, 0.0f, 0.0f, 0.0f, 1.0f );
+        that.set_line_width( 1.466667f );
+        that.move_to( 213.499990f, 697.433330f );
+        that.bezier_curve_to( 213.499990f, 697.433330f, 212.733330f, 692.333330f, 199.500000f, 707.700000f );
+        that.stroke();
+
+        that.begin_path();
+        that.set_color( canvas_ity::stroke_style, 0.0f, 0.0f, 0.0f, 1.0f );
+        that.set_line_width( 1.466667f );
+        that.move_to( 221.499990f, 704.766660f );
+        that.bezier_curve_to( 221.499990f, 704.766660f, 224.466660f, 695.266660f, 214.966660f, 701.833330f );
+        that.stroke();
+
+        that.begin_path();
+        that.set_color( canvas_ity::stroke_style, 0.0f, 0.0f, 0.0f, 1.0f );
+        that.set_line_width( 1.466667f );
+        that.move_to( 300.699990f, 717.300000f );
+        that.bezier_curve_to( 300.699990f, 717.300000f, 302.933330f, 701.133330f, 286.033330f, 720.233330f );
+        that.stroke();
+
+        // Black detail spots from original tiger
+        that.begin_path();
+        that.set_line_width( 0.133333f );
+        that.set_color( canvas_ity::fill_style, 0.0f, 0.0f, 0.0f, 1.0f );
+        that.move_to( 206.433330f, 429.700000f );
+        that.bezier_curve_to( 206.433330f, 429.700000f, 214.053330f, 429.068000f, 212.299990f, 431.433340f );
+        that.bezier_curve_to( 210.533330f, 433.761340f, 206.966660f, 432.633340f, 206.966660f, 432.633340f );
+        that.line_to( 206.433330f, 429.700000f );
+        that.fill();
+
+        that.begin_path();
+        that.set_line_width( 0.133333f );
+        that.set_color( canvas_ity::fill_style, 0.0f, 0.0f, 0.0f, 1.0f );
+        that.move_to( 251.633330f, 450.233340f );
+        that.bezier_curve_to( 251.633330f, 450.233340f, 259.226660f, 449.601340f, 257.499990f, 451.966670f );
+        that.bezier_curve_to( 255.706660f, 454.294670f, 252.166660f, 453.166670f, 252.166660f, 453.166670f );
+        that.line_to( 251.633330f, 450.233340f );
+        that.fill();
     }
 
     // Get image data as RGBA bytes
