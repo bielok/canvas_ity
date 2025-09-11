@@ -26,7 +26,7 @@ jobs:
         emcc --version
         em++ --version
         
-    - name: Build WASM tiger demo
+    - name: Build WASM star demo
       run: |
         chmod +x build_wasm.sh
         ./build_wasm.sh
@@ -39,7 +39,7 @@ jobs:
     - name: Upload WASM artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: canvas_ity_wasm_demo
+        name: canvas_ity_wasm_star_demo
         path: |
           dist/
         retention-days: 30

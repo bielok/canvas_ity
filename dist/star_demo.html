@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas_ity Star Demo - WASM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .demo-area {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        canvas {
+            border: 2px solid #333;
+            max-width: 100%;
+            background: white;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .info {
+            background: #e7f3ff;
+            border: 1px solid #b3d4fc;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .status.loading {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .code-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+
+        pre {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⭐ Canvas_ity Star Demo</h1>
+        
+        <div class="info">
+            <p><strong>About:</strong> This demo showcases the canvas_ity library compiled to WebAssembly. 
+            Canvas_ity is a high-quality, single-header C++ library for 2D vector graphics rendering, 
+            closely modeled on the HTML5 Canvas specification.</p>
+            
+            <p><strong>Star Demo:</strong> This example demonstrates path building, fills, strokes, line dash patterns, 
+            line joins, line caps, linear gradients, drop shadows, and compositing operations using JavaScript calls 
+            to the WASM library.</p>
+        </div>
+
+        <div class="status loading" id="status">
+            Loading WASM module...
+        </div>
+
+        <div class="demo-area">
+            <canvas id="starCanvas" width="256" height="256"></canvas>
+        </div>
+
+        <div class="controls">
+            <button id="renderBtn" onclick="renderStar()" disabled>Render Star</button>
+            <button id="clearBtn" onclick="clearCanvas()">Clear Canvas</button>
+            <button id="downloadBtn" onclick="downloadImage()">Download Image</button>
+        </div>
+
+        <div class="code-section">
+            <h3>JavaScript Code Using WASM Library:</h3>
+            <pre id="jsCode">
+// This code runs in JavaScript calling the WASM canvas_ity library:
+
+function renderStar() {
+    // Initialize canvas
+    canvas.init_canvas(256, 256);
+    
+    // Build a star path
+    canvas.begin_path();
+    canvas.move_to(128.0, 28.0);   canvas.line_to(157.0, 87.0);
+    canvas.line_to(223.0, 97.0);  canvas.line_to(175.0, 143.0);
+    canvas.line_to(186.0, 208.0); canvas.line_to(128.0, 178.0);
+    canvas.line_to(69.0, 208.0);  canvas.line_to(80.0, 143.0);
+    canvas.line_to(32.0, 97.0);   canvas.line_to(98.0, 87.0);
+    canvas.close_path();
+    
+    // Set up drop shadow
+    canvas.set_shadow_blur(8.0);
+    canvas.set_shadow_offset(0.0, 4.0);
+    canvas.set_shadow_color(0.0, 0.0, 0.0, 0.5);
+    
+    // Fill with yellow
+    canvas.set_fill_color(1.0, 0.9, 0.2, 1.0);
+    canvas.fill();
+    
+    // Stroke with red, rounded joins
+    canvas.set_line_join(1); // rounded
+    canvas.set_line_width(12.0);
+    canvas.set_stroke_color(0.9, 0.0, 0.5, 1.0);
+    canvas.stroke();
+    
+    // Add linear gradient shine effect
+    canvas.set_linear_gradient_fill(64.0, 0.0, 192.0, 256.0);
+    canvas.add_color_stop_fill(0.30, 1.0, 1.0, 1.0, 0.0);
+    canvas.add_color_stop_fill(0.35, 1.0, 1.0, 1.0, 0.8);
+    canvas.add_color_stop_fill(0.45, 1.0, 1.0, 1.0, 0.8);
+    canvas.add_color_stop_fill(0.50, 1.0, 1.0, 1.0, 0.0);
+    
+    canvas.set_global_composite_operation(1); // source_atop
+    canvas.fill_rect(0.0, 0.0, 256.0, 256.0);
+}
+            </pre>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <strong>canvas_ity</strong> library via WebAssembly</p>
+            <p>This demo shows JavaScript calling into a general-purpose WASM library</p>
+        </div>
+    </div>
+
+    <script src="canvas_ity.js"></script>
+    <script>
+        let wasmModule = null;
+        let canvas = null;
+        let canvasElement = null;
+        let ctx = null;
+
+        // Initialize when page loads
+        window.addEventListener('load', async () => {
+            try {
+                updateStatus('Loading WASM module...', 'loading');
+                
+                // Initialize HTML canvas
+                canvasElement = document.getElementById('starCanvas');
+                ctx = canvasElement.getContext('2d');
+                
+                // Load WASM module
+                wasmModule = await CanvasItyModule();
+                canvas = wasmModule;
+                
+                updateStatus('WASM module loaded successfully!', 'success');
+                document.getElementById('renderBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('Failed to load WASM module:', error);
+                updateStatus('Failed to load WASM module: ' + error.message, 'error');
+            }
+        });
+
+        function updateStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = 'status ' + type;
+        }
+
+        function renderStar() {
+            if (!canvas) {
+                updateStatus('WASM module not loaded yet', 'error');
+                return;
+            }
+
+            try {
+                updateStatus('Rendering star...', 'loading');
+                
+                // Initialize the canvas
+                canvas._init_canvas(256, 256);
+                
+                // Build a star path - directly calling WASM functions from JavaScript
+                canvas._begin_path();
+                canvas._move_to(128.0, 28.0);   canvas._line_to(157.0, 87.0);
+                canvas._line_to(223.0, 97.0);  canvas._line_to(175.0, 143.0);
+                canvas._line_to(186.0, 208.0); canvas._line_to(128.0, 178.0);
+                canvas._line_to(69.0, 208.0);  canvas._line_to(80.0, 143.0);
+                canvas._line_to(32.0, 97.0);   canvas._line_to(98.0, 87.0);
+                canvas._close_path();
+                
+                // Set up the drop shadow
+                canvas._set_shadow_blur(8.0);
+                canvas._set_shadow_offset(0.0, 4.0);
+                canvas._set_shadow_color(0.0, 0.0, 0.0, 0.5);
+                
+                // Fill the star with yellow
+                canvas._set_fill_color(1.0, 0.9, 0.2, 1.0);
+                canvas._fill();
+                
+                // Draw the star with a thick red stroke and rounded points
+                canvas._set_line_join(1); // rounded = 1
+                canvas._set_line_width(12.0);
+                canvas._set_stroke_color(0.9, 0.0, 0.5, 1.0);
+                canvas._stroke();
+                
+                // Turn off the drop shadow
+                canvas._set_shadow_color(0.0, 0.0, 0.0, 0.0);
+                
+                // Add a shine layer over the star
+                canvas._set_linear_gradient_fill(64.0, 0.0, 192.0, 256.0);
+                canvas._add_color_stop_fill(0.30, 1.0, 1.0, 1.0, 0.0);
+                canvas._add_color_stop_fill(0.35, 1.0, 1.0, 1.0, 0.8);
+                canvas._add_color_stop_fill(0.45, 1.0, 1.0, 1.0, 0.8);
+                canvas._add_color_stop_fill(0.50, 1.0, 1.0, 1.0, 0.0);
+                
+                canvas._set_global_composite_operation(1); // source_atop = 1
+                canvas._fill_rect(0.0, 0.0, 256.0, 256.0);
+                
+                // Get the image data from WASM
+                const dataPtr = canvas._get_image_data();
+                const width = canvas._get_width();
+                const height = canvas._get_height();
+                
+                // Create ImageData from WASM memory
+                const imageData = ctx.createImageData(width, height);
+                const wasmData = new Uint8Array(canvas.HEAP8.buffer, dataPtr, width * height * 4);
+                
+                // Copy data to ImageData
+                for (let i = 0; i < wasmData.length; i++) {
+                    imageData.data[i] = wasmData[i];
+                }
+                
+                // Draw to HTML canvas
+                ctx.putImageData(imageData, 0, 0);
+                
+                updateStatus('Star rendered successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error rendering star:', error);
+                updateStatus('Error rendering star: ' + error.message, 'error');
+            }
+        }
+
+        function clearCanvas() {
+            if (ctx) {
+                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                updateStatus('Canvas cleared', 'success');
+            }
+        }
+
+        function downloadImage() {
+            if (!canvasElement) return;
+            
+            try {
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'canvas_ity_star.png';
+                link.href = canvasElement.toDataURL();
+                link.click();
+                
+                updateStatus('Image downloaded!', 'success');
+            } catch (error) {
+                console.error('Error downloading image:', error);
+                updateStatus('Error downloading image: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
