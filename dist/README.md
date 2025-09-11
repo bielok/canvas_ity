@@ -2,6 +2,8 @@
 
 This directory contains a WebAssembly (WASM) demo of the canvas_ity library showcasing the famous PostScript tiger rendering.
 
+![Canvas_ity WASM Demo Screenshot](screenshot.png)
+
 ## About Canvas_ity
 
 Canvas_ity is a tiny, single-header C++ library for rasterizing immediate-mode 2D vector graphics, closely modeled on the basic W3C HTML5 2D canvas specification. It provides high-quality rendering with gamma-correct blending, trapezoidal antialiasing, and bicubic resampling.
