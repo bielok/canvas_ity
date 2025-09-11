@@ -56,7 +56,7 @@ public:
     }
 
     void rect(float x, float y, float w, float h) {
-        canvas_ptr->rect(x, y, w, h);
+        canvas_ptr->rectangle(x, y, w, h);
     }
 
     // Fill and stroke methods
@@ -165,7 +165,7 @@ public:
             case 6: canvas_ptr->global_composite_operation = canvas_ity::destination_in; break;
             case 7: canvas_ptr->global_composite_operation = canvas_ity::destination_out; break;
             case 8: canvas_ptr->global_composite_operation = canvas_ity::lighter; break;
-            case 9: canvas_ptr->global_composite_operation = canvas_ity::copy; break;
+            case 9: canvas_ptr->global_composite_operation = canvas_ity::source_copy; break;
             case 10: canvas_ptr->global_composite_operation = canvas_ity::exclusive_or; break;
         }
     }
