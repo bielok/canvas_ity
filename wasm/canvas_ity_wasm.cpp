@@ -380,4 +380,14 @@ extern "C" {
     void clear_canvas() {
         if (canvas) canvas->clear_canvas();
     }
+
+    EMSCRIPTEN_KEEPALIVE
+    void set_line_dash(emscripten::val segments, int count) {
+        if (canvas) canvas->set_line_dash(segments, count);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void set_line_dash_offset(float offset) {
+        if (canvas) canvas->set_line_dash_offset(offset);
+    }
 }
