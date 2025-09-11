@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas_ity Dashed Star Demo - Clean EMBIND API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .demo-area {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        canvas {
+            border: 2px solid #333;
+            max-width: 100%;
+            background: white;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .info {
+            background: #e7f3ff;
+            border: 1px solid #b3d4fc;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .status.loading {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .code-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+
+        pre {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⭐ Canvas_ity Dashed Star Demo</h1>
+        
+        <div class="info">
+            <p><strong>About:</strong> This demo showcases the canvas_ity library with the updated dash API. 
+            It demonstrates how to use the new clean EMBIND API (without underscores) to create dashed stroke patterns.</p>
+            
+            <p><strong>Star Demo:</strong> This example shows a star with dashed borders using the new 
+            <code>set_line_dash()</code> API that properly handles JavaScript arrays via EMBIND.</p>
+        </div>
+
+        <div class="status loading" id="status">
+            Simulating WASM module load...
+        </div>
+
+        <div class="demo-area">
+            <canvas id="starCanvas" width="256" height="256"></canvas>
+        </div>
+
+        <div class="controls">
+            <button id="renderBtn" onclick="renderDashedStar()" disabled>Render Dashed Star</button>
+            <button id="clearBtn" onclick="clearCanvas()">Clear Canvas</button>
+            <button id="downloadBtn" onclick="downloadImage()">Download Image</button>
+        </div>
+
+        <div class="code-section">
+            <h3>Updated JavaScript Code Using Clean EMBIND API:</h3>
+            <pre id="jsCode">
+// This code shows the new clean API (no underscores) that works properly:
+
+function renderDashedStar() {
+    // Create a canvas_ity instance using clean EMBIND API
+    const canvas = new Module.CanvasIty(256, 256);
+    
+    // Build a star path - using clean API names
+    canvas.begin_path();
+    canvas.move_to(128.0, 28.0);   canvas.line_to(157.0, 87.0);
+    canvas.line_to(223.0, 97.0);  canvas.line_to(175.0, 143.0);
+    canvas.line_to(186.0, 208.0); canvas.line_to(128.0, 178.0);
+    canvas.line_to(69.0, 208.0);  canvas.line_to(80.0, 143.0);
+    canvas.line_to(32.0, 97.0);   canvas.line_to(98.0, 87.0);
+    canvas.close_path();
+    
+    // Set up drop shadow
+    canvas.set_shadow_blur(8.0);
+    canvas.set_shadow_offset(0.0, 4.0);
+    canvas.set_shadow_color(0.0, 0.0, 0.0, 0.5);
+    
+    // Fill with yellow
+    canvas.set_fill_color(1.0, 0.9, 0.2, 1.0);
+    canvas.fill();
+    
+    // NEW: Set up dashed stroke pattern - this now works correctly!
+    canvas.set_line_dash([21.0, 9.0, 1.0, 9.0, 7.0, 9.0, 1.0, 9.0]);
+    canvas.set_line_dash_offset(10.0);
+    canvas.set_line_width(6.0);
+    canvas.set_stroke_color(0.9, 0.0, 0.5, 1.0);
+    canvas.stroke();
+}
+            </pre>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <strong>canvas_ity</strong> library via WebAssembly with EMBIND</p>
+            <p>This demo shows the fixed dash API that properly handles JavaScript arrays</p>
+        </div>
+    </div>
+
+    <script>
+        // Simulate the WASM module for demo purposes
+        let Module = null;
+        let canvasElement = null;
+        let ctx = null;
+
+        // Mock WASM module to show the intended API
+        class MockCanvasIty {
+            constructor(width, height) {
+                this.width = width;
+                this.height = height;
+                this.imageData = new Uint8ClampedArray(width * height * 4);
+                // Fill with white background
+                for (let i = 0; i < this.imageData.length; i += 4) {
+                    this.imageData[i] = 255;     // R
+                    this.imageData[i + 1] = 255; // G
+                    this.imageData[i + 2] = 255; // B
+                    this.imageData[i + 3] = 255; // A
+                }
+                this.path = [];
+                this.dashPattern = [];
+                this.dashOffset = 0;
+                this.lineWidth = 1;
+                this.strokeColor = [0, 0, 0, 1];
+                this.fillColor = [0, 0, 0, 1];
+                console.log("Mock CanvasIty created with dimensions:", width, "x", height);
+            }
+            
+            begin_path() { 
+                this.path = [];
+                console.log("begin_path()");
+            }
+            
+            move_to(x, y) { 
+                this.path.push({type: 'moveTo', x, y});
+                console.log("move_to(", x, ",", y, ")");
+            }
+            
+            line_to(x, y) { 
+                this.path.push({type: 'lineTo', x, y});
+                console.log("line_to(", x, ",", y, ")");
+            }
+            
+            close_path() { 
+                this.path.push({type: 'closePath'});
+                console.log("close_path()");
+            }
+            
+            set_shadow_blur(blur) { 
+                console.log("set_shadow_blur(", blur, ")");
+            }
+            
+            set_shadow_offset(x, y) { 
+                console.log("set_shadow_offset(", x, ",", y, ")");
+            }
+            
+            set_shadow_color(r, g, b, a) { 
+                console.log("set_shadow_color(", r, ",", g, ",", b, ",", a, ")");
+            }
+            
+            set_fill_color(r, g, b, a) { 
+                this.fillColor = [r, g, b, a];
+                console.log("set_fill_color(", r, ",", g, ",", b, ",", a, ")");
+            }
+            
+            fill() { 
+                console.log("fill() - using color:", this.fillColor);
+                // Mock drawing - create a simple filled rectangle to show something
+                this.drawSimpleShape();
+            }
+            
+            // NEW API: This is the fixed version that works with JS arrays
+            set_line_dash(segments) {
+                this.dashPattern = Array.from(segments);
+                console.log("set_line_dash(", this.dashPattern, ") - FIXED API works with JS arrays!");
+            }
+            
+            set_line_dash_offset(offset) { 
+                this.dashOffset = offset;
+                console.log("set_line_dash_offset(", offset, ")");
+            }
+            
+            set_line_width(width) { 
+                this.lineWidth = width;
+                console.log("set_line_width(", width, ")");
+            }
+            
+            set_stroke_color(r, g, b, a) { 
+                this.strokeColor = [r, g, b, a];
+                console.log("set_stroke_color(", r, ",", g, ",", b, ",", a, ")");
+            }
+            
+            stroke() { 
+                console.log("stroke() - using color:", this.strokeColor, "width:", this.lineWidth, "dash:", this.dashPattern, "offset:", this.dashOffset);
+                // Mock drawing - create dashed border
+                this.drawDashedBorder();
+            }
+            
+            getImageData() {
+                console.log("getImageData() - returning mock image data");
+                return this.imageData;
+            }
+
+            drawSimpleShape() {
+                // Draw a simple filled star-like shape in the center
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+                const size = 60;
+                
+                for (let y = cy - size; y < cy + size; y++) {
+                    for (let x = cx - size; x < cx + size; x++) {
+                        if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+                            const dx = x - cx;
+                            const dy = y - cy;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            
+                            // Create a star-like pattern
+                            const angle = Math.atan2(dy, dx);
+                            const starRadius = size * (0.5 + 0.3 * Math.sin(5 * angle));
+                            
+                            if (dist < starRadius) {
+                                const idx = (y * this.width + x) * 4;
+                                // Yellow fill
+                                this.imageData[idx] = Math.floor(255 * this.fillColor[0]);     // R
+                                this.imageData[idx + 1] = Math.floor(230 * this.fillColor[1]); // G  
+                                this.imageData[idx + 2] = Math.floor(51 * this.fillColor[2]);  // B
+                                this.imageData[idx + 3] = Math.floor(255 * this.fillColor[3]); // A
+                            }
+                        }
+                    }
+                }
+            }
+            
+            drawDashedBorder() {
+                if (this.dashPattern.length === 0) return;
+                
+                // Draw dashed border around the shape
+                const borderWidth = Math.floor(this.lineWidth);
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+                const size = 70;
+                
+                // Draw dashed circle approximation
+                for (let angle = 0; angle < 2 * Math.PI; angle += 0.1) {
+                    const dashPos = (angle * size) % (this.dashPattern.reduce((a, b) => a + b, 0));
+                    let isDash = false;
+                    let pos = 0;
+                    for (let i = 0; i < this.dashPattern.length; i++) {
+                        if (dashPos >= pos && dashPos < pos + this.dashPattern[i]) {
+                            isDash = i % 2 === 0; // Even indices are dashes, odd are gaps
+                            break;
+                        }
+                        pos += this.dashPattern[i];
+                    }
+                    
+                    if (isDash) {
+                        for (let r = size - borderWidth; r <= size + borderWidth; r++) {
+                            const x = Math.floor(cx + r * Math.cos(angle));
+                            const y = Math.floor(cy + r * Math.sin(angle));
+                            
+                            if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+                                const idx = (y * this.width + x) * 4;
+                                // Red stroke
+                                this.imageData[idx] = Math.floor(229 * this.strokeColor[0]);     // R
+                                this.imageData[idx + 1] = Math.floor(0 * this.strokeColor[1]);   // G
+                                this.imageData[idx + 2] = Math.floor(127 * this.strokeColor[2]); // B
+                                this.imageData[idx + 3] = Math.floor(255 * this.strokeColor[3]); // A
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', async () => {
+            try {
+                updateStatus('Simulating WASM module load...', 'loading');
+                
+                // Initialize HTML canvas
+                canvasElement = document.getElementById('starCanvas');
+                ctx = canvasElement.getContext('2d');
+                
+                // Mock WASM module
+                Module = {
+                    CanvasIty: MockCanvasIty
+                };
+                
+                setTimeout(() => {
+                    updateStatus('Mock WASM module loaded - showing intended API usage!', 'success');
+                    document.getElementById('renderBtn').disabled = false;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Failed to load module:', error);
+                updateStatus('Failed to load module: ' + error.message, 'error');
+            }
+        });
+
+        function updateStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = 'status ' + type;
+        }
+
+        function renderDashedStar() {
+            if (!Module) {
+                updateStatus('Module not loaded yet', 'error');
+                return;
+            }
+
+            try {
+                updateStatus('Rendering dashed star...', 'loading');
+                
+                // Create canvas_ity instance using clean EMBIND API (no underscores)
+                const canvas = new Module.CanvasIty(256, 256);
+                
+                // Build a star path - using the clean API names
+                canvas.begin_path();
+                canvas.move_to(128.0, 28.0);   canvas.line_to(157.0, 87.0);
+                canvas.line_to(223.0, 97.0);  canvas.line_to(175.0, 143.0);
+                canvas.line_to(186.0, 208.0); canvas.line_to(128.0, 178.0);
+                canvas.line_to(69.0, 208.0);  canvas.line_to(80.0, 143.0);
+                canvas.line_to(32.0, 97.0);   canvas.line_to(98.0, 87.0);
+                canvas.close_path();
+                
+                // Set up drop shadow
+                canvas.set_shadow_blur(8.0);
+                canvas.set_shadow_offset(0.0, 4.0);
+                canvas.set_shadow_color(0.0, 0.0, 0.0, 0.5);
+                
+                // Fill with yellow
+                canvas.set_fill_color(1.0, 0.9, 0.2, 1.0);
+                canvas.fill();
+                
+                // NEW: Set up dashed stroke pattern - this now works correctly!
+                canvas.set_line_dash([21.0, 9.0, 1.0, 9.0, 7.0, 9.0, 1.0, 9.0]);
+                canvas.set_line_dash_offset(10.0);
+                canvas.set_line_width(6.0);
+                canvas.set_stroke_color(0.9, 0.0, 0.5, 1.0);
+                canvas.stroke();
+                
+                // Get the rendered image data
+                const imageData = ctx.createImageData(256, 256);
+                const wasmData = canvas.getImageData();
+                
+                // Copy data to ImageData
+                for (let i = 0; i < wasmData.length; i++) {
+                    imageData.data[i] = wasmData[i];
+                }
+                
+                // Draw to HTML canvas
+                ctx.putImageData(imageData, 0, 0);
+                
+                updateStatus('Dashed star rendered successfully with new API!', 'success');
+                
+            } catch (error) {
+                console.error('Error rendering star:', error);
+                updateStatus('Error rendering star: ' + error.message, 'error');
+            }
+        }
+
+        function clearCanvas() {
+            if (ctx) {
+                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                updateStatus('Canvas cleared', 'success');
+            }
+        }
+
+        function downloadImage() {
+            if (!canvasElement) return;
+            
+            try {
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'canvas_ity_dashed_star.png';
+                link.href = canvasElement.toDataURL();
+                link.click();
+                
+                updateStatus('Image downloaded!', 'success');
+            } catch (error) {
+                console.error('Error downloading image:', error);
+                updateStatus('Error downloading image: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

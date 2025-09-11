@@ -109,13 +109,18 @@ public:
         }
     }
 
-    void set_line_dash(emscripten::val segments, int count) {
+    void set_line_dash(emscripten::val segments) {
         static std::vector<float> dash_segments;
         dash_segments.clear();
-        for (int i = 0; i < count; i++) {
-            dash_segments.push_back(segments[i].as<float>());
+        
+        if (!segments.isUndefined() && !segments.isNull()) {
+            int length = segments["length"].as<int>();
+            for (int i = 0; i < length; i++) {
+                dash_segments.push_back(segments[i].as<float>());
+            }
         }
-        canvas_ptr->set_line_dash(dash_segments.data(), count);
+        
+        canvas_ptr->set_line_dash(dash_segments.data(), dash_segments.size());
     }
 
     void set_line_dash_offset(float offset) {
@@ -382,8 +387,8 @@ extern "C" {
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void set_line_dash(emscripten::val segments, int count) {
-        if (canvas) canvas->set_line_dash(segments, count);
+    void set_line_dash(emscripten::val segments) {
+        if (canvas) canvas->set_line_dash(segments);
     }
 
     EMSCRIPTEN_KEEPALIVE

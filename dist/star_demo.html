@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas_ity Star Demo - WASM</title>
+    <title>Canvas_ity Dashed Star Demo - WASM</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -122,16 +122,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>⭐ Canvas_ity Star Demo</h1>
+        <h1>⭐ Canvas_ity Dashed Star Demo</h1>
         
         <div class="info">
-            <p><strong>About:</strong> This demo showcases the canvas_ity library compiled to WebAssembly. 
-            Canvas_ity is a high-quality, single-header C++ library for 2D vector graphics rendering, 
+            <p><strong>About:</strong> This demo showcases the canvas_ity library compiled to WebAssembly 
+            with the new fixed dash API. Canvas_ity is a high-quality, single-header C++ library for 2D vector graphics rendering, 
             closely modeled on the HTML5 Canvas specification.</p>
             
-            <p><strong>Star Demo:</strong> This example demonstrates path building, fills, strokes, line dash patterns, 
-            line joins, line caps, linear gradients, drop shadows, and compositing operations using JavaScript calls 
-            to the WASM library.</p>
+            <p><strong>Dashed Star Demo:</strong> This example demonstrates path building, fills, strokes, 
+            <strong>dashed line patterns</strong>, line joins, line caps, linear gradients, drop shadows, and compositing operations 
+            using the clean EMBIND API (no underscore prefixes) that properly handles JavaScript arrays.</p>
         </div>
 
         <div class="status loading" id="status">
@@ -143,7 +143,7 @@
         </div>
 
         <div class="controls">
-            <button id="renderBtn" onclick="renderStar()" disabled>Render Star</button>
+            <button id="renderBtn" onclick="renderStar()" disabled>Render Dashed Star</button>
             <button id="clearBtn" onclick="clearCanvas()">Clear Canvas</button>
             <button id="downloadBtn" onclick="downloadImage()">Download Image</button>
         </div>
@@ -154,42 +154,43 @@
 // This code runs in JavaScript calling the WASM canvas_ity library:
 
 function renderStar() {
-    // Initialize canvas
-    canvas.init_canvas(256, 256);
+    // Create canvas using EMBIND clean API (no underscores)
+    const canvasIty = new Module.CanvasIty(256, 256);
     
     // Build a star path
-    canvas.begin_path();
-    canvas.move_to(128.0, 28.0);   canvas.line_to(157.0, 87.0);
-    canvas.line_to(223.0, 97.0);  canvas.line_to(175.0, 143.0);
-    canvas.line_to(186.0, 208.0); canvas.line_to(128.0, 178.0);
-    canvas.line_to(69.0, 208.0);  canvas.line_to(80.0, 143.0);
-    canvas.line_to(32.0, 97.0);   canvas.line_to(98.0, 87.0);
-    canvas.close_path();
+    canvasIty.begin_path();
+    canvasIty.move_to(128.0, 28.0);   canvasIty.line_to(157.0, 87.0);
+    canvasIty.line_to(223.0, 97.0);  canvasIty.line_to(175.0, 143.0);
+    canvasIty.line_to(186.0, 208.0); canvasIty.line_to(128.0, 178.0);
+    canvasIty.line_to(69.0, 208.0);  canvasIty.line_to(80.0, 143.0);
+    canvasIty.line_to(32.0, 97.0);   canvasIty.line_to(98.0, 87.0);
+    canvasIty.close_path();
     
     // Set up drop shadow
-    canvas.set_shadow_blur(8.0);
-    canvas.set_shadow_offset(0.0, 4.0);
-    canvas.set_shadow_color(0.0, 0.0, 0.0, 0.5);
+    canvasIty.set_shadow_blur(8.0);
+    canvasIty.set_shadow_offset(0.0, 4.0);
+    canvasIty.set_shadow_color(0.0, 0.0, 0.0, 0.5);
     
     // Fill with yellow
-    canvas.set_fill_color(1.0, 0.9, 0.2, 1.0);
-    canvas.fill();
+    canvasIty.set_fill_color(1.0, 0.9, 0.2, 1.0);
+    canvasIty.fill();
     
-    // Stroke with red, rounded joins
-    canvas.set_line_join(1); // rounded
-    canvas.set_line_width(12.0);
-    canvas.set_stroke_color(0.9, 0.0, 0.5, 1.0);
-    canvas.stroke();
+    // NEW: Set dashed stroke pattern - the fixed API!
+    canvasIty.set_line_dash([21.0, 9.0, 1.0, 9.0, 7.0, 9.0, 1.0, 9.0]);
+    canvasIty.set_line_dash_offset(10.0);
+    canvasIty.set_line_width(6.0);
+    canvasIty.set_stroke_color(0.9, 0.0, 0.5, 1.0);
+    canvasIty.stroke();
     
     // Add linear gradient shine effect
-    canvas.set_linear_gradient_fill(64.0, 0.0, 192.0, 256.0);
-    canvas.add_color_stop_fill(0.30, 1.0, 1.0, 1.0, 0.0);
-    canvas.add_color_stop_fill(0.35, 1.0, 1.0, 1.0, 0.8);
-    canvas.add_color_stop_fill(0.45, 1.0, 1.0, 1.0, 0.8);
-    canvas.add_color_stop_fill(0.50, 1.0, 1.0, 1.0, 0.0);
+    canvasIty.set_linear_gradient_fill(64.0, 0.0, 192.0, 256.0);
+    canvasIty.add_color_stop_fill(0.30, 1.0, 1.0, 1.0, 0.0);
+    canvasIty.add_color_stop_fill(0.35, 1.0, 1.0, 1.0, 0.8);
+    canvasIty.add_color_stop_fill(0.45, 1.0, 1.0, 1.0, 0.8);
+    canvasIty.add_color_stop_fill(0.50, 1.0, 1.0, 1.0, 0.0);
     
-    canvas.set_global_composite_operation(1); // source_atop
-    canvas.fill_rect(0.0, 0.0, 256.0, 256.0);
+    canvasIty.set_global_composite_operation(1); // source_atop
+    canvasIty.fill_rect(0.0, 0.0, 256.0, 256.0);
 }
             </pre>
         </div>
@@ -236,7 +237,7 @@ function renderStar() {
         }
 
         function renderStar() {
-            if (!canvas) {
+            if (!wasmModule) {
                 updateStatus('WASM module not loaded yet', 'error');
                 return;
             }
@@ -244,54 +245,55 @@ function renderStar() {
             try {
                 updateStatus('Rendering star...', 'loading');
                 
-                // Initialize the canvas
-                canvas._init_canvas(256, 256);
+                // Create canvas using EMBIND clean API (no underscores)
+                const canvasIty = new wasmModule.CanvasIty(256, 256);
                 
                 // Build a star path - directly calling WASM functions from JavaScript
-                canvas._begin_path();
-                canvas._move_to(128.0, 28.0);   canvas._line_to(157.0, 87.0);
-                canvas._line_to(223.0, 97.0);  canvas._line_to(175.0, 143.0);
-                canvas._line_to(186.0, 208.0); canvas._line_to(128.0, 178.0);
-                canvas._line_to(69.0, 208.0);  canvas._line_to(80.0, 143.0);
-                canvas._line_to(32.0, 97.0);   canvas._line_to(98.0, 87.0);
-                canvas._close_path();
+                canvasIty.begin_path();
+                canvasIty.move_to(128.0, 28.0);   canvasIty.line_to(157.0, 87.0);
+                canvasIty.line_to(223.0, 97.0);  canvasIty.line_to(175.0, 143.0);
+                canvasIty.line_to(186.0, 208.0); canvasIty.line_to(128.0, 178.0);
+                canvasIty.line_to(69.0, 208.0);  canvasIty.line_to(80.0, 143.0);
+                canvasIty.line_to(32.0, 97.0);   canvasIty.line_to(98.0, 87.0);
+                canvasIty.close_path();
                 
                 // Set up the drop shadow
-                canvas._set_shadow_blur(8.0);
-                canvas._set_shadow_offset(0.0, 4.0);
-                canvas._set_shadow_color(0.0, 0.0, 0.0, 0.5);
+                canvasIty.set_shadow_blur(8.0);
+                canvasIty.set_shadow_offset(0.0, 4.0);
+                canvasIty.set_shadow_color(0.0, 0.0, 0.0, 0.5);
                 
                 // Fill the star with yellow
-                canvas._set_fill_color(1.0, 0.9, 0.2, 1.0);
-                canvas._fill();
+                canvasIty.set_fill_color(1.0, 0.9, 0.2, 1.0);
+                canvasIty.fill();
                 
-                // Draw the star with a thick red stroke and rounded points
-                canvas._set_line_join(1); // rounded = 1
-                canvas._set_line_width(12.0);
-                canvas._set_stroke_color(0.9, 0.0, 0.5, 1.0);
-                canvas._stroke();
+                // NEW: Set dashed stroke pattern - this now works with the fixed API!
+                canvasIty.set_line_dash([21.0, 9.0, 1.0, 9.0, 7.0, 9.0, 1.0, 9.0]);
+                canvasIty.set_line_dash_offset(10.0);
+                canvasIty.set_line_width(6.0);
+                canvasIty.set_stroke_color(0.9, 0.0, 0.5, 1.0);
+                canvasIty.stroke();
                 
                 // Turn off the drop shadow
-                canvas._set_shadow_color(0.0, 0.0, 0.0, 0.0);
+                canvasIty.set_shadow_color(0.0, 0.0, 0.0, 0.0);
                 
                 // Add a shine layer over the star
-                canvas._set_linear_gradient_fill(64.0, 0.0, 192.0, 256.0);
-                canvas._add_color_stop_fill(0.30, 1.0, 1.0, 1.0, 0.0);
-                canvas._add_color_stop_fill(0.35, 1.0, 1.0, 1.0, 0.8);
-                canvas._add_color_stop_fill(0.45, 1.0, 1.0, 1.0, 0.8);
-                canvas._add_color_stop_fill(0.50, 1.0, 1.0, 1.0, 0.0);
+                canvasIty.set_linear_gradient_fill(64.0, 0.0, 192.0, 256.0);
+                canvasIty.add_color_stop_fill(0.30, 1.0, 1.0, 1.0, 0.0);
+                canvasIty.add_color_stop_fill(0.35, 1.0, 1.0, 1.0, 0.8);
+                canvasIty.add_color_stop_fill(0.45, 1.0, 1.0, 1.0, 0.8);
+                canvasIty.add_color_stop_fill(0.50, 1.0, 1.0, 1.0, 0.0);
                 
-                canvas._set_global_composite_operation(1); // source_atop = 1
-                canvas._fill_rect(0.0, 0.0, 256.0, 256.0);
+                canvasIty.set_global_composite_operation(1); // source_atop = 1
+                canvasIty.fill_rect(0.0, 0.0, 256.0, 256.0);
                 
-                // Get the image data from WASM
-                const dataPtr = canvas._get_image_data();
-                const width = canvas._get_width();
-                const height = canvas._get_height();
+                // Get the image data from WASM using the new API
+                const dataPtr = canvasIty.getImageData();
+                const width = canvasIty.getWidth();
+                const height = canvasIty.getHeight();
                 
                 // Create ImageData from WASM memory
                 const imageData = ctx.createImageData(width, height);
-                const wasmData = new Uint8Array(canvas.HEAP8.buffer, dataPtr, width * height * 4);
+                const wasmData = new Uint8Array(wasmModule.HEAP8.buffer, dataPtr, width * height * 4);
                 
                 // Copy data to ImageData
                 for (let i = 0; i < wasmData.length; i++) {
@@ -301,7 +303,7 @@ function renderStar() {
                 // Draw to HTML canvas
                 ctx.putImageData(imageData, 0, 0);
                 
-                updateStatus('Star rendered successfully!', 'success');
+                updateStatus('Star with dashed border rendered successfully!', 'success');
                 
             } catch (error) {
                 console.error('Error rendering star:', error);
