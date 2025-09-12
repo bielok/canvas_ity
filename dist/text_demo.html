@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas_ity Text Rendering Demo - WASM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        .demo-area {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        canvas {
+            border: 2px solid #333;
+            max-width: 100%;
+            background: white;
+            margin: 10px;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .control-group {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .control-group h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        input[type="file"] {
+            margin: 10px;
+            padding: 8px;
+        }
+        
+        input[type="text"], input[type="range"], select {
+            margin: 5px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        label {
+            display: inline-block;
+            width: 100px;
+            font-weight: bold;
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .status.loading {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #e7f3ff;
+            border: 1px solid #b3d4fc;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .font-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔤 Canvas_ity Text Rendering Demo</h1>
+        
+        <div class="info">
+            <p><strong>About:</strong> This demo showcases the text rendering capabilities of the canvas_ity library via WASM, including font loading, fill/stroke text, text alignment, baselines, and measurements.</p>
+            
+            <p><strong>Features:</strong> Upload a .ttf font file, render text with different styles, alignments, and baselines. Measure text width and test various text rendering functions.</p>
+        </div>
+
+        <div class="status loading" id="status">
+            Loading WASM module...
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="container">
+            <h2>Font Management</h2>
+            
+            <div class="control-group">
+                <h4>Upload Font File</h4>
+                <input type="file" id="fontFile" accept=".ttf" />
+                <br>
+                <label for="fontSize">Size:</label>
+                <input type="range" id="fontSize" min="8" max="72" value="24" />
+                <span id="fontSizeValue">24px</span>
+                <br>
+                <button id="loadFontBtn" onclick="loadFont()" disabled>Load Font</button>
+            </div>
+
+            <div class="font-info" id="fontInfo" style="display: none;">
+                <strong>Font loaded successfully!</strong><br>
+                <span id="fontDetails"></span>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Text Properties</h2>
+            
+            <div class="control-group">
+                <h4>Text Content & Style</h4>
+                <label for="textInput">Text:</label>
+                <input type="text" id="textInput" value="Hello Canvas_ity!" style="width: 200px;" />
+                <br>
+                
+                <label for="textAlign">Align:</label>
+                <select id="textAlign">
+                    <option value="0">Left</option>
+                    <option value="1">Right</option>
+                    <option value="2">Center</option>
+                    <option value="3">Start</option>
+                    <option value="4">End</option>
+                </select>
+                
+                <label for="textBaseline">Baseline:</label>
+                <select id="textBaseline">
+                    <option value="0">Alphabetic</option>
+                    <option value="1">Top</option>
+                    <option value="2">Middle</option>
+                    <option value="3">Bottom</option>
+                    <option value="4">Hanging</option>
+                    <option value="5">Ideographic</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <h4>Colors</h4>
+                <label for="fillColor">Fill:</label>
+                <input type="color" id="fillColor" value="#000000" />
+                
+                <label for="strokeColor">Stroke:</label>
+                <input type="color" id="strokeColor" value="#ff0000" />
+                
+                <label for="strokeWidth">Width:</label>
+                <input type="range" id="strokeWidth" min="0.5" max="10" step="0.5" value="2" />
+                <span id="strokeWidthValue">2px</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Canvas Output</h2>
+        
+        <div class="demo-area">
+            <canvas id="textCanvas" width="800" height="400"></canvas>
+        </div>
+
+        <div class="controls">
+            <button id="fillTextBtn" onclick="renderFillText()" disabled>Fill Text</button>
+            <button id="strokeTextBtn" onclick="renderStrokeText()" disabled>Stroke Text</button>
+            <button id="bothTextBtn" onclick="renderBothText()" disabled>Fill + Stroke</button>
+            <button id="measureBtn" onclick="measureText()" disabled>Measure Text</button>
+            <button id="clearBtn" onclick="clearCanvas()">Clear Canvas</button>
+            <button id="downloadBtn" onclick="downloadImage()">Download Image</button>
+        </div>
+
+        <div id="measurements" style="display: none;" class="info">
+            <strong>Text Measurements:</strong><br>
+            <span id="measurementDetails"></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Sample Demo</h2>
+        <p>Try this complete example that shows multiple text rendering features:</p>
+        <button id="demoBtn" onclick="runCompleteDemo()" disabled>Run Complete Text Demo</button>
+        
+        <div class="demo-area">
+            <canvas id="demoCanvas" width="600" height="400"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let Module = null;
+        let canvasElement = null;
+        let demoCanvasElement = null;
+        let ctx = null;
+        let demoCtx = null;
+        let currentFontBuffer = null;
+
+        // Initialize when page loads
+        window.addEventListener('load', async () => {
+            try {
+                updateStatus('Loading WASM module...', 'loading');
+                
+                // Initialize HTML canvases
+                canvasElement = document.getElementById('textCanvas');
+                demoCanvasElement = document.getElementById('demoCanvas');
+                ctx = canvasElement.getContext('2d');
+                demoCtx = demoCanvasElement.getContext('2d');
+                
+                // Load the WASM module
+                Module = await CanvasItyModule();
+                
+                updateStatus('WASM module loaded successfully!', 'success');
+                enableControls(true);
+                
+                // Setup range input listeners
+                document.getElementById('fontSize').addEventListener('input', (e) => {
+                    document.getElementById('fontSizeValue').textContent = e.target.value + 'px';
+                });
+                
+                document.getElementById('strokeWidth').addEventListener('input', (e) => {
+                    document.getElementById('strokeWidthValue').textContent = e.target.value + 'px';
+                });
+                
+            } catch (error) {
+                console.error('Failed to load module:', error);
+                updateStatus('Failed to load module: ' + error.message, 'error');
+            }
+        });
+
+        function updateStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = 'status ' + type;
+        }
+
+        function enableControls(enable) {
+            const buttons = ['loadFontBtn', 'fillTextBtn', 'strokeTextBtn', 'bothTextBtn', 'measureBtn', 'demoBtn'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = !enable;
+            });
+        }
+
+        async function loadFont() {
+            const fileInput = document.getElementById('fontFile');
+            const fontSize = parseFloat(document.getElementById('fontSize').value);
+            
+            if (!fileInput.files[0]) {
+                updateStatus('Please select a font file first', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('Loading font...', 'loading');
+                
+                // Read the font file
+                const file = fileInput.files[0];
+                const arrayBuffer = await file.arrayBuffer();
+                currentFontBuffer = new Uint8Array(arrayBuffer);
+                
+                // Create canvas_ity instance to test font loading
+                const canvas = new Module.CanvasIty(100, 100);
+                const success = canvas.set_font(currentFontBuffer, fontSize);
+                
+                if (success) {
+                    updateStatus('Font loaded successfully!', 'success');
+                    document.getElementById('fontInfo').style.display = 'block';
+                    document.getElementById('fontDetails').innerHTML = 
+                        `File: ${file.name}<br>Size: ${fontSize}px<br>Data: ${currentFontBuffer.length} bytes`;
+                } else {
+                    updateStatus('Failed to load font - invalid TTF file?', 'error');
+                    currentFontBuffer = null;
+                }
+                
+            } catch (error) {
+                console.error('Error loading font:', error);
+                updateStatus('Error loading font: ' + error.message, 'error');
+                currentFontBuffer = null;
+            }
+        }
+
+        function renderFillText() {
+            if (!currentFontBuffer) {
+                updateStatus('Please load a font first', 'error');
+                return;
+            }
+            
+            renderText('fill');
+        }
+
+        function renderStrokeText() {
+            if (!currentFontBuffer) {
+                updateStatus('Please load a font first', 'error');
+                return;
+            }
+            
+            renderText('stroke');
+        }
+
+        function renderBothText() {
+            if (!currentFontBuffer) {
+                updateStatus('Please load a font first', 'error');
+                return;
+            }
+            
+            renderText('both');
+        }
+
+        function renderText(mode) {
+            try {
+                updateStatus('Rendering text...', 'loading');
+                
+                const canvas = new Module.CanvasIty(800, 400);
+                const text = document.getElementById('textInput').value;
+                const fontSize = parseFloat(document.getElementById('fontSize').value);
+                const textAlign = parseInt(document.getElementById('textAlign').value);
+                const textBaseline = parseInt(document.getElementById('textBaseline').value);
+                const fillColor = hexToRgb(document.getElementById('fillColor').value);
+                const strokeColor = hexToRgb(document.getElementById('strokeColor').value);
+                const strokeWidth = parseFloat(document.getElementById('strokeWidth').value);
+                
+                // Set font
+                canvas.set_font(currentFontBuffer, fontSize);
+                
+                // Set text properties
+                canvas.set_text_align(textAlign);
+                canvas.set_text_baseline(textBaseline);
+                canvas.set_line_width(strokeWidth);
+                
+                // Clear canvas with white background
+                canvas.set_fill_color(1.0, 1.0, 1.0, 1.0);
+                canvas.fill_rect(0, 0, 800, 400);
+                
+                // Draw reference lines
+                drawReferenceLines(canvas);
+                
+                // Render text at center
+                const x = 400;
+                const y = 200;
+                
+                if (mode === 'fill' || mode === 'both') {
+                    canvas.set_fill_color(fillColor.r, fillColor.g, fillColor.b, 1.0);
+                    canvas.fill_text(text, x, y);
+                }
+                
+                if (mode === 'stroke' || mode === 'both') {
+                    canvas.set_stroke_color(strokeColor.r, strokeColor.g, strokeColor.b, 1.0);
+                    canvas.stroke_text(text, x, y);
+                }
+                
+                // Copy to HTML canvas
+                copyCanvasToHTML(canvas, ctx);
+                
+                updateStatus('Text rendered successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error rendering text:', error);
+                updateStatus('Error rendering text: ' + error.message, 'error');
+            }
+        }
+
+        function measureText() {
+            if (!currentFontBuffer) {
+                updateStatus('Please load a font first', 'error');
+                return;
+            }
+            
+            try {
+                const canvas = new Module.CanvasIty(100, 100);
+                const text = document.getElementById('textInput').value;
+                const fontSize = parseFloat(document.getElementById('fontSize').value);
+                
+                canvas.set_font(currentFontBuffer, fontSize);
+                const width = canvas.measure_text(text);
+                
+                document.getElementById('measurements').style.display = 'block';
+                document.getElementById('measurementDetails').innerHTML = 
+                    `Text: "${text}"<br>Width: ${width.toFixed(2)} pixels<br>Font Size: ${fontSize}px`;
+                
+                updateStatus('Text measured successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error measuring text:', error);
+                updateStatus('Error measuring text: ' + error.message, 'error');
+            }
+        }
+
+        function runCompleteDemo() {
+            if (!currentFontBuffer) {
+                updateStatus('Please load a font first', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('Running complete demo...', 'loading');
+                
+                const canvas = new Module.CanvasIty(600, 400);
+                
+                // Set font
+                canvas.set_font(currentFontBuffer, 32);
+                
+                // Clear with light blue background
+                canvas.set_fill_color(0.9, 0.95, 1.0, 1.0);
+                canvas.fill_rect(0, 0, 600, 400);
+                
+                // Title
+                canvas.set_fill_color(0.2, 0.2, 0.8, 1.0);
+                canvas.set_text_align(2); // center
+                canvas.set_text_baseline(1); // top
+                canvas.fill_text("Canvas_ity Text Demo", 300, 20);
+                
+                // Different alignments
+                const y = 120;
+                canvas.set_font(currentFontBuffer, 20);
+                
+                // Left aligned
+                canvas.set_text_align(0); // left
+                canvas.set_text_baseline(2); // middle
+                canvas.set_fill_color(0.8, 0.2, 0.2, 1.0);
+                canvas.fill_text("Left aligned", 50, y);
+                
+                // Center aligned
+                canvas.set_text_align(2); // center
+                canvas.set_fill_color(0.2, 0.8, 0.2, 1.0);
+                canvas.fill_text("Center aligned", 300, y);
+                
+                // Right aligned
+                canvas.set_text_align(1); // right
+                canvas.set_fill_color(0.8, 0.2, 0.8, 1.0);
+                canvas.fill_text("Right aligned", 550, y);
+                
+                // Stroke + Fill example
+                canvas.set_font(currentFontBuffer, 36);
+                canvas.set_text_align(2); // center
+                canvas.set_text_baseline(2); // middle
+                canvas.set_line_width(3);
+                
+                canvas.set_fill_color(1.0, 0.9, 0.2, 1.0);
+                canvas.fill_text("Styled Text", 300, 220);
+                
+                canvas.set_stroke_color(0.9, 0.2, 0.2, 1.0);
+                canvas.stroke_text("Styled Text", 300, 220);
+                
+                // Different baselines
+                const baselineY = 320;
+                canvas.set_font(currentFontBuffer, 16);
+                canvas.set_fill_color(0.2, 0.2, 0.2, 1.0);
+                
+                // Draw baseline reference line
+                canvas.set_stroke_color(0.7, 0.7, 0.7, 1.0);
+                canvas.set_line_width(1);
+                canvas.begin_path();
+                canvas.move_to(50, baselineY);
+                canvas.line_to(550, baselineY);
+                canvas.stroke();
+                
+                const baselines = [
+                    { name: "Top", value: 1 },
+                    { name: "Middle", value: 2 },
+                    { name: "Alphabetic", value: 0 },
+                    { name: "Bottom", value: 3 }
+                ];
+                
+                for (let i = 0; i < baselines.length; i++) {
+                    canvas.set_text_baseline(baselines[i].value);
+                    canvas.set_text_align(0); // left
+                    canvas.fill_text(baselines[i].name, 50 + i * 120, baselineY);
+                }
+                
+                // Copy to demo canvas
+                copyCanvasToHTML(canvas, demoCtx);
+                
+                updateStatus('Complete demo rendered successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error running demo:', error);
+                updateStatus('Error running demo: ' + error.message, 'error');
+            }
+        }
+
+        function drawReferenceLines(canvas) {
+            // Draw light gray reference lines
+            canvas.set_stroke_color(0.8, 0.8, 0.8, 1.0);
+            canvas.set_line_width(1);
+            
+            // Vertical center line
+            canvas.begin_path();
+            canvas.move_to(400, 0);
+            canvas.line_to(400, 400);
+            canvas.stroke();
+            
+            // Horizontal center line
+            canvas.begin_path();
+            canvas.move_to(0, 200);
+            canvas.line_to(800, 200);
+            canvas.stroke();
+        }
+
+        function copyCanvasToHTML(wasmCanvas, htmlCtx) {
+            const imageData = htmlCtx.createImageData(wasmCanvas.getWidth(), wasmCanvas.getHeight());
+            const wasmDataPtr = wasmCanvas.getImageData();
+            const wasmData = new Uint8ClampedArray(Module.HEAPU8.buffer, wasmDataPtr, imageData.data.length);
+            
+            // Copy data to ImageData
+            for (let i = 0; i < wasmData.length; i++) {
+                imageData.data[i] = wasmData[i];
+            }
+            
+            // Draw to HTML canvas
+            htmlCtx.putImageData(imageData, 0, 0);
+        }
+
+        function clearCanvas() {
+            if (ctx) {
+                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                updateStatus('Canvas cleared', 'success');
+            }
+        }
+
+        function downloadImage() {
+            if (!canvasElement) return;
+            
+            try {
+                const link = document.createElement('a');
+                link.download = 'canvas_ity_text_demo.png';
+                link.href = canvasElement.toDataURL();
+                link.click();
+                
+                updateStatus('Image downloaded!', 'success');
+            } catch (error) {
+                console.error('Error downloading image:', error);
+                updateStatus('Error downloading image: ' + error.message, 'error');
+            }
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16) / 255.0,
+                g: parseInt(result[2], 16) / 255.0,
+                b: parseInt(result[3], 16) / 255.0
+            } : {r: 0, g: 0, b: 0};
+        }
+    </script>
+    <script src="canvas_ity.js"></script>
+</body>
+</html>
