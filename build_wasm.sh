@@ -20,7 +20,8 @@ emcc wasm/canvas_ity_wasm.cpp \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MODULARIZE=1 \
     -s EXPORT_NAME='CanvasItyModule' \
-    -s ENVIRONMENT='node' \
+    -s ENVIRONMENT='web' \
+    -s SINGLE_FILE=1 \
     --bind \
     -o dist/canvas_ity.js
 
