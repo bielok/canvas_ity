@@ -20,7 +20,7 @@ emcc wasm/canvas_ity_wasm.cpp \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MODULARIZE=1 \
     -s EXPORT_NAME='CanvasItyModule' \
-    -s ENVIRONMENT='worker' \
+    -s ENVIRONMENT='web' \
     -s DYNAMIC_EXECUTION=0 \
     -s EXPORT_ES6 \
     --bind \
