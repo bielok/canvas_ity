@@ -223,8 +223,16 @@ public:
         canvas_ptr->fill_text(text.c_str(), x, y, max_width);
     }
     
+    void fill_text_simple(const std::string& text, float x, float y) {
+        canvas_ptr->fill_text(text.c_str(), x, y, 1.0e30f);
+    }
+    
     void stroke_text(const std::string& text, float x, float y, float max_width = 1.0e30f) {
         canvas_ptr->stroke_text(text.c_str(), x, y, max_width);
+    }
+    
+    void stroke_text_simple(const std::string& text, float x, float y) {
+        canvas_ptr->stroke_text(text.c_str(), x, y, 1.0e30f);
     }
     
     float measure_text(const std::string& text) {
@@ -316,8 +324,10 @@ EMSCRIPTEN_BINDINGS(canvas_ity_module) {
         .function("getHeight", &CanvasItyWrapper::getHeight)
         // Text rendering methods
         .function("set_font", &CanvasItyWrapper::set_font)
-        .function("fill_text", &CanvasItyWrapper::fill_text)
-        .function("stroke_text", &CanvasItyWrapper::stroke_text)
+        .function("fill_text", &CanvasItyWrapper::fill_text_simple)
+        .function("fill_text_with_width", &CanvasItyWrapper::fill_text)
+        .function("stroke_text", &CanvasItyWrapper::stroke_text_simple)
+        .function("stroke_text_with_width", &CanvasItyWrapper::stroke_text)
         .function("measure_text", &CanvasItyWrapper::measure_text)
         .function("set_text_align", &CanvasItyWrapper::set_text_align)
         .function("set_text_baseline", &CanvasItyWrapper::set_text_baseline);
