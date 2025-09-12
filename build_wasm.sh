@@ -22,6 +22,8 @@ emcc wasm/canvas_ity_wasm.cpp \
     -s EXPORT_NAME='CanvasItyModule' \
     -s ENVIRONMENT='web' \
     -s SINGLE_FILE=1 \
+    -s DYNAMIC_EXECUTION=0 \
+
     --bind \
     -o dist/canvas_ity.js
 
