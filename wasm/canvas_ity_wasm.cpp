@@ -202,19 +202,18 @@ public:
         canvas_ptr->clear_rectangle(0, 0, width, height);
     }
 
-    // Text rendering methods
-    bool set_font(emscripten::val font_data, float size) {
-        if (font_data.isUndefined() || font_data.isNull()) {
+    // Text rendering methods  
+    bool set_font(uintptr_t buffer_ptr, int length, float size) {
+        if (buffer_ptr == 0 || length <= 0) {
             return false;
         }
         
-        // Get the length of the font data
-        int length = font_data["length"].as<int>();
-        
-        // Resize our buffer and copy the data
+        // Resize our buffer and copy the data from memory
         font_buffer.resize(length);
+        unsigned char* src_buffer = reinterpret_cast<unsigned char*>(buffer_ptr);
+        
         for (int i = 0; i < length; i++) {
-            font_buffer[i] = font_data[i].as<unsigned char>();
+            font_buffer[i] = src_buffer[i];
         }
         
         return canvas_ptr->set_font(font_buffer.data(), length, size);
@@ -459,10 +458,7 @@ extern "C" {
     EMSCRIPTEN_KEEPALIVE
     bool set_font_from_buffer(uintptr_t buffer_ptr, int length, float size) {
         if (canvas && buffer_ptr) {
-            // Create a temporary val from the buffer pointer
-            emscripten::val font_data = emscripten::val::module_property("HEAPU8")
-                .call<emscripten::val>("subarray", buffer_ptr, buffer_ptr + length);
-            return canvas->set_font(font_data, size);
+            return canvas->set_font(buffer_ptr, length, size);
         }
         return false;
     }
