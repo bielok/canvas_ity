@@ -22,6 +22,7 @@ emcc wasm/canvas_ity_wasm.cpp \
     -s EXPORT_NAME='CanvasItyModule' \
     -s ENVIRONMENT='worker' \
     -s DYNAMIC_EXECUTION=0 \
+    -s EXPORT_ES6 \
     --bind \
     -o dist/canvas_ity.js
 
