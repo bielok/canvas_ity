@@ -16,6 +16,7 @@ class CanvasItyWrapper {
 private:
     std::unique_ptr<canvas_ity::canvas> canvas_ptr;
     int width, height;
+    std::vector<unsigned char> font_buffer; // Store font data
 
 public:
     CanvasItyWrapper(int w, int h) : width(w), height(h) {
@@ -201,6 +202,64 @@ public:
         canvas_ptr->clear_rectangle(0, 0, width, height);
     }
 
+    // Text rendering methods  
+    bool set_font(uintptr_t buffer_ptr, int length, float size) {
+        if (buffer_ptr == 0 || length <= 0) {
+            return false;
+        }
+        
+        // Resize our buffer and copy the data from memory
+        font_buffer.resize(length);
+        unsigned char* src_buffer = reinterpret_cast<unsigned char*>(buffer_ptr);
+        
+        for (int i = 0; i < length; i++) {
+            font_buffer[i] = src_buffer[i];
+        }
+        
+        return canvas_ptr->set_font(font_buffer.data(), length, size);
+    }
+    
+    void fill_text(const std::string& text, float x, float y, float max_width = 1.0e30f) {
+        canvas_ptr->fill_text(text.c_str(), x, y, max_width);
+    }
+    
+    void fill_text_simple(const std::string& text, float x, float y) {
+        canvas_ptr->fill_text(text.c_str(), x, y, 1.0e30f);
+    }
+    
+    void stroke_text(const std::string& text, float x, float y, float max_width = 1.0e30f) {
+        canvas_ptr->stroke_text(text.c_str(), x, y, max_width);
+    }
+    
+    void stroke_text_simple(const std::string& text, float x, float y) {
+        canvas_ptr->stroke_text(text.c_str(), x, y, 1.0e30f);
+    }
+    
+    float measure_text(const std::string& text) {
+        return canvas_ptr->measure_text(text.c_str());
+    }
+    
+    void set_text_align(int align) {
+        switch (align) {
+            case 0: canvas_ptr->text_align = canvas_ity::leftward; break;
+            case 1: canvas_ptr->text_align = canvas_ity::rightward; break;
+            case 2: canvas_ptr->text_align = canvas_ity::center; break;
+            case 3: canvas_ptr->text_align = canvas_ity::start; break;
+            case 4: canvas_ptr->text_align = canvas_ity::ending; break;
+        }
+    }
+    
+    void set_text_baseline(int baseline) {
+        switch (baseline) {
+            case 0: canvas_ptr->text_baseline = canvas_ity::alphabetic; break;
+            case 1: canvas_ptr->text_baseline = canvas_ity::top; break;
+            case 2: canvas_ptr->text_baseline = canvas_ity::middle; break;
+            case 3: canvas_ptr->text_baseline = canvas_ity::bottom; break;
+            case 4: canvas_ptr->text_baseline = canvas_ity::hanging; break;
+            case 5: canvas_ptr->text_baseline = canvas_ity::ideographic; break;
+        }
+    }
+
     // Get image data as RGBA bytes
     uintptr_t getImageData() {
         static std::vector<unsigned char> image_data;
@@ -262,7 +321,16 @@ EMSCRIPTEN_BINDINGS(canvas_ity_module) {
         .function("clear_canvas", &CanvasItyWrapper::clear_canvas)
         .function("getImageData", &CanvasItyWrapper::getImageData)
         .function("getWidth", &CanvasItyWrapper::getWidth)
-        .function("getHeight", &CanvasItyWrapper::getHeight);
+        .function("getHeight", &CanvasItyWrapper::getHeight)
+        // Text rendering methods
+        .function("set_font", &CanvasItyWrapper::set_font)
+        .function("fill_text", &CanvasItyWrapper::fill_text_simple)
+        .function("fill_text_with_width", &CanvasItyWrapper::fill_text)
+        .function("stroke_text", &CanvasItyWrapper::stroke_text_simple)
+        .function("stroke_text_with_width", &CanvasItyWrapper::stroke_text)
+        .function("measure_text", &CanvasItyWrapper::measure_text)
+        .function("set_text_align", &CanvasItyWrapper::set_text_align)
+        .function("set_text_baseline", &CanvasItyWrapper::set_text_baseline);
 }
 #endif
 
@@ -394,5 +462,46 @@ extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void set_line_dash_offset(float offset) {
         if (canvas) canvas->set_line_dash_offset(offset);
+    }
+
+    // Text rendering C-style API
+    EMSCRIPTEN_KEEPALIVE
+    bool set_font_from_buffer(uintptr_t buffer_ptr, int length, float size) {
+        if (canvas && buffer_ptr) {
+            return canvas->set_font(buffer_ptr, length, size);
+        }
+        return false;
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void fill_text(const char* text, float x, float y, float max_width) {
+        if (canvas && text) {
+            canvas->fill_text(std::string(text), x, y, max_width);
+        }
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void stroke_text(const char* text, float x, float y, float max_width) {
+        if (canvas && text) {
+            canvas->stroke_text(std::string(text), x, y, max_width);
+        }
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    float measure_text(const char* text) {
+        if (canvas && text) {
+            return canvas->measure_text(std::string(text));
+        }
+        return 0.0f;
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void set_text_align(int align) {
+        if (canvas) canvas->set_text_align(align);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void set_text_baseline(int baseline) {
+        if (canvas) canvas->set_text_baseline(baseline);
     }
 }
